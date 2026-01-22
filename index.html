@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Formulario do cliente</title>
+
+<style>
+*{box-sizing:border-box;}
+body{
+ margin:0; font-family:Arial;
+ background:black; color:white;
+ min-height:100vh; display:flex;
+ justify-content:center; align-items:center; padding:15px;
+}
+.box{
+ width:100%; max-width:420px;
+ background:#0d0d0d; padding:20px;
+ border-radius:15px; box-shadow:0 0 20px #ff000055;
+ text-align:center;
+}
+h1{color:red;}
+label{text-align:left;display:block;margin-top:12px;}
+input{
+ width:100%; padding:12px; margin-top:6px;
+ border-radius:8px; border:none; font-size:16px;
+}
+button{
+ margin-top:18px;width:100%;padding:14px;
+ background:red;color:white;border:none;
+ border-radius:10px;font-size:18px;
+}
+.error{color:red;margin-top:8px;display:none;font-weight:bold;}
+#enviarBtn{display:none;}
+#segundaParte,#adminParte{display:none;}
+</style>
+</head>
+<body>
+
+<!-- FORM NORMAL -->
+<div class="box" id="formParte">
+<h1>Formulario do cliente</h1>
+
+<label>Nome</label>
+<input id="nome">
+
+<label>Nick do Discord</label>
+<input id="discord">
+<div class="error" id="erroDiscord">Coloque uma conta que exista</div>
+
+<label>Seu personagem de Stranger Things</label>
+<input id="personagem">
+<div class="error" id="erroPersonagem">Personagem já utilizado</div>
+
+<label>Idade</label>
+<input type="number" id="idade">
+<div class="error" id="erroIdade">Menores de 10 anos não podem</div>
+
+<button id="enviarBtn" onclick="enviar()">Enviar</button>
+</div>
+
+<!-- CONFIRMAÇÃO NORMAL -->
+<div class="box" id="segundaParte">
+<h1 id="bemVindo"></h1>
+<p>Confirmar formulario</p>
+<button onclick="confirmar()">Confirmar formulario</button>
+</div>
+
+<!-- TELA ADM -->
+<div class="box" id="adminParte">
+<h1>Senha:</h1>
+<input type="password" id="senha" placeholder="Digite a senha">
+<button onclick="verificarSenha()">Confirmar</button>
+<div class="error" id="erroSenha"></div>
+</div>
+
+<script>
+let tentativas = 0;
+
+function discordValido(n){return /^.{2,32}(#\d{4})?$/.test(n);}
+function personagemUsado(p){
+ let u=JSON.parse(localStorage.getItem("personagensUsados"))||[];
+ return u.includes(p.toLowerCase());
+}
+
+function verificar(){
+ if(nome.value.trim().toLowerCase()==="reset!"){
+    formParte.style.display="none";
+    segundaParte.style.display="none";
+    adminParte.style.display="block";
+    return;
+ }
+
+ let discordOk=discordValido(discord.value.trim());
+ let personagemOk=personagem.value && !personagemUsado(personagem.value);
+
+ erroDiscord.style.display=discord.value && !discordOk?"block":"none";
+ erroPersonagem.style.display=personagem.value && !personagemOk?"block":"none";
+
+ if(idade.value && idade.value<10){
+    erroIdade.style.display="block";
+    enviarBtn.style.display="none";
+    return;
+ } else erroIdade.style.display="none";
+
+ if(nome.value && idade.value && discordOk && personagemOk)
+    enviarBtn.style.display="block";
+ else enviarBtn.style.display="none";
+}
+
+document.querySelectorAll("input").forEach(i=>i.addEventListener("input",verificar));
+
+function enviar(){
+ let usados=JSON.parse(localStorage.getItem("personagensUsados"))||[];
+ usados.push(personagem.value.toLowerCase());
+ localStorage.setItem("personagensUsados",JSON.stringify(usados));
+
+ formParte.style.display="none";
+ segundaParte.style.display="block";
+ bemVindo.innerText="Olá "+nome.value+" seja bem vindo";
+}
+
+function confirmar(){
+ let corpo=`Formulario do cliente\n\nNome: ${nome.value}\nDiscord: ${discord.value}\nPersonagem: ${personagem.value}\nIdade: ${idade.value}`;
+ window.location.href=`mailto:mi.micael1405@gmail.com?subject=Formulario&body=${encodeURIComponent(corpo)}`;
+}
+
+function verificarSenha(){
+ if(senha.value==="ADM123"){
+    localStorage.removeItem("personagensUsados");
+    adminParte.innerHTML="<h1>Resetado</h1><p>Lista de personagens apagada.</p>";
+ } else {
+    tentativas++;
+    erroSenha.style.display="block";
+    erroSenha.innerText="Senha incorreta, tente novamente";
+    senha.value="";
+    if(tentativas>=3){
+        document.body.innerHTML="";
+        window.close();
+    }
+ }
+}
+</script>
+</body>
+</html>
