@@ -8,22 +8,18 @@
 <style>
 *{box-sizing:border-box;}
 body{
- margin:0; font-family:Arial;
- background:black; color:white;
- min-height:100vh; display:flex;
- justify-content:center; align-items:center; padding:15px;
+ margin:0;font-family:Arial;background:black;color:white;
+ min-height:100vh;display:flex;justify-content:center;align-items:center;padding:15px;
 }
 .box{
- width:100%; max-width:420px;
- background:#0d0d0d; padding:20px;
- border-radius:15px; box-shadow:0 0 20px #ff000055;
- text-align:center;
+ width:100%;max-width:420px;background:#0d0d0d;padding:20px;
+ border-radius:15px;box-shadow:0 0 20px #ff000055;text-align:center;
 }
 h1{color:red;}
 label{text-align:left;display:block;margin-top:12px;}
 input{
- width:100%; padding:12px; margin-top:6px;
- border-radius:8px; border:none; font-size:16px;
+ width:100%;padding:12px;margin-top:6px;
+ border-radius:8px;border:none;font-size:16px;
 }
 button{
  margin-top:18px;width:100%;padding:14px;
@@ -37,7 +33,6 @@ button{
 </head>
 <body>
 
-<!-- FORM NORMAL -->
 <div class="box" id="formParte">
 <h1>Formulario do cliente</h1>
 
@@ -59,17 +54,15 @@ button{
 <button id="enviarBtn" onclick="enviar()">Enviar</button>
 </div>
 
-<!-- CONFIRMAÇÃO NORMAL -->
 <div class="box" id="segundaParte">
 <h1 id="bemVindo"></h1>
 <p>Confirmar formulario</p>
 <button onclick="confirmar()">Confirmar formulario</button>
 </div>
 
-<!-- TELA ADM -->
 <div class="box" id="adminParte">
 <h1>Senha:</h1>
-<input type="password" id="senha" placeholder="Digite a senha">
+<input type="password" id="senha">
 <button onclick="verificarSenha()">Confirmar</button>
 <div class="error" id="erroSenha"></div>
 </div>
@@ -86,7 +79,6 @@ function personagemUsado(p){
 function verificar(){
  if(nome.value.trim().toLowerCase()==="reset!"){
     formParte.style.display="none";
-    segundaParte.style.display="none";
     adminParte.style.display="block";
     return;
  }
@@ -121,14 +113,26 @@ function enviar(){
 }
 
 function confirmar(){
- let corpo=`Formulario do cliente\n\nNome: ${nome.value}\nDiscord: ${discord.value}\nPersonagem: ${personagem.value}\nIdade: ${idade.value}`;
- window.location.href=`mailto:mi.micael1405@gmail.com?subject=Formulario&body=${encodeURIComponent(corpo)}`;
+ let corpo =
+`Formulario do cliente
+
+Nome: ${nome.value}
+Discord: ${discord.value}
+Personagem: ${personagem.value}
+Idade: ${idade.value}`;
+
+ let gmailLink="https://mail.google.com/mail/?view=cm&fs=1"+
+ "&to=mi.micael1405@gmail.com"+
+ "&su=Formulario%20do%20Discord"+
+ "&body="+encodeURIComponent(corpo);
+
+ window.open(gmailLink,"_blank");
 }
 
 function verificarSenha(){
  if(senha.value==="ADM123"){
     localStorage.removeItem("personagensUsados");
-    adminParte.innerHTML="<h1>Resetado</h1><p>Lista de personagens apagada.</p>";
+    adminParte.innerHTML="<h1>Resetado</h1><p>Lista apagada.</p>";
  } else {
     tentativas++;
     erroSenha.style.display="block";
