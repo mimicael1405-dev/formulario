@@ -25,12 +25,17 @@ button{
  margin-top:18px;width:100%;padding:14px;
  background:red;color:white;border:none;
  border-radius:10px;font-size:18px;
+ cursor:pointer;
+}
+button:disabled{
+ opacity:.5;
+ cursor:not-allowed;
 }
 .error{color:red;margin-top:8px;display:none;font-weight:bold;}
-#enviarBtn{display:none;}
 #segundaParte,#adminParte{display:none;}
 </style>
 </head>
+
 <body>
 
 <div class="box" id="formParte">
@@ -40,8 +45,8 @@ button{
 <input id="nome">
 
 <label>Nick do Discord</label>
-<input id="discord">
-<div class="error" id="erroDiscord">Coloque uma conta que exista</div>
+<input id="discord" placeholder="Ex: usuario#1234">
+<div class="error" id="erroDiscord">Discord inválido</div>
 
 <label>Seu personagem de Stranger Things</label>
 <input id="personagem">
@@ -51,7 +56,7 @@ button{
 <input type="number" id="idade">
 <div class="error" id="erroIdade">Menores de 10 anos não podem</div>
 
-<button id="enviarBtn" onclick="enviar()">Enviar</button>
+<button id="enviarBtn" onclick="enviar()" disabled>Enviar</button>
 </div>
 
 <div class="box" id="segundaParte">
@@ -68,52 +73,54 @@ button{
 </div>
 
 <script>
-let tentativas = 0;
+const inputs = document.querySelectorAll("input");
+const enviarBtn = document.getElementById("enviarBtn");
 
-function discordValido(n){return /^.{2,32}(#\d{4})?$/.test(n);}
+function discordValido(n){
+ return /^[a-zA-Z0-9_.]{2,32}(#\d{4})?$/.test(n);
+}
+
+function personagemNormalizado(p){
+ return p.trim().toLowerCase();
+}
+
 function personagemUsado(p){
- let u=JSON.parse(localStorage.getItem("personagensUsados"))||[];
- return u.includes(p.toLowerCase());
+ const usados = JSON.parse(localStorage.getItem("personagensUsados")) || [];
+ return usados.includes(personagemNormalizado(p));
 }
 
 function verificar(){
- if(nome.value.trim().toLowerCase()==="reset!"){
-    formParte.style.display="none";
-    adminParte.style.display="block";
-    return;
+ if(nome.value.trim().toLowerCase() === "reset!"){
+   formParte.style.display="none";
+   adminParte.style.display="block";
+   return;
  }
 
- let discordOk=discordValido(discord.value.trim());
- let personagemOk=personagem.value && !personagemUsado(personagem.value);
+ const discordOk = discordValido(discord.value.trim());
+ const idadeOk = idade.value && idade.value >= 10;
+ const personagemOk = personagem.value && !personagemUsado(personagem.value);
 
- erroDiscord.style.display=discord.value && !discordOk?"block":"none";
- erroPersonagem.style.display=personagem.value && !personagemOk?"block":"none";
+ erroDiscord.style.display = discord.value && !discordOk ? "block" : "none";
+ erroIdade.style.display = idade.value && !idadeOk ? "block" : "none";
+ erroPersonagem.style.display = personagem.value && !personagemOk ? "block" : "none";
 
- if(idade.value && idade.value<10){
-    erroIdade.style.display="block";
-    enviarBtn.style.display="none";
-    return;
- } else erroIdade.style.display="none";
-
- if(nome.value && idade.value && discordOk && personagemOk)
-    enviarBtn.style.display="block";
- else enviarBtn.style.display="none";
+ enviarBtn.disabled = !(nome.value && discordOk && idadeOk && personagemOk);
 }
 
-document.querySelectorAll("input").forEach(i=>i.addEventListener("input",verificar));
+inputs.forEach(i => i.addEventListener("input", verificar));
 
 function enviar(){
- let usados=JSON.parse(localStorage.getItem("personagensUsados"))||[];
- usados.push(personagem.value.toLowerCase());
- localStorage.setItem("personagensUsados",JSON.stringify(usados));
+ const usados = JSON.parse(localStorage.getItem("personagensUsados")) || [];
+ usados.push(personagemNormalizado(personagem.value));
+ localStorage.setItem("personagensUsados", JSON.stringify(usados));
 
  formParte.style.display="none";
  segundaParte.style.display="block";
- bemVindo.innerText="Olá "+nome.value+" seja bem vindo";
+ bemVindo.innerText = `Olá ${nome.value}, seja bem-vindo`;
 }
 
 function confirmar(){
- let corpo =
+ const corpo =
 `Formulario do cliente
 
 Nome: ${nome.value}
@@ -121,29 +128,31 @@ Discord: ${discord.value}
 Personagem: ${personagem.value}
 Idade: ${idade.value}`;
 
- let gmailLink="https://mail.google.com/mail/?view=cm&fs=1"+
- "&to=mi.micael1405@gmail.com"+
- "&su=Formulario%20do%20Discord"+
- "&body="+encodeURIComponent(corpo);
+ const gmailLink =
+ "https://mail.google.com/mail/?view=cm&fs=1" +
+ "&to=mi.micael1405@gmail.com" +
+ "&su=Formulario%20do%20Discord" +
+ "&body=" + encodeURIComponent(corpo);
 
- window.open(gmailLink,"_blank");
+ window.open(gmailLink, "_blank");
 }
 
+let tentativas = 0;
 function verificarSenha(){
- if(senha.value==="ADM123"){
-    localStorage.removeItem("personagensUsados");
-    adminParte.innerHTML="<h1>Resetado</h1><p>Lista apagada.</p>";
+ if(senha.value === "ADM123"){
+   localStorage.removeItem("personagensUsados");
+   adminParte.innerHTML = "<h1>Resetado</h1><p>Lista apagada.</p>";
  } else {
-    tentativas++;
-    erroSenha.style.display="block";
-    erroSenha.innerText="Senha incorreta, tente novamente";
-    senha.value="";
-    if(tentativas>=3){
-        document.body.innerHTML="";
-        window.close();
-    }
+   tentativas++;
+   erroSenha.style.display="block";
+   erroSenha.innerText="Senha incorreta";
+   senha.value="";
+   if(tentativas >= 3){
+     adminParte.innerHTML="<h1>Acesso bloqueado</h1>";
+   }
  }
 }
 </script>
+
 </body>
 </html>
