@@ -8,8 +8,15 @@
 <style>
 *{box-sizing:border-box;}
 body{
- margin:0;font-family:Arial;background:black;color:white;
- min-height:100vh;display:flex;justify-content:center;align-items:center;padding:15px;
+ margin:0;
+ font-family:Arial;
+ background:black;
+ color:white;
+ min-height:100vh;
+ display:flex;
+ justify-content:center;
+ align-items:center;
+ padding:15px;
 }
 
 .box{
@@ -28,21 +35,46 @@ body{
 h1{color:red;text-shadow:0 0 10px red;}
 label{text-align:left;display:block;margin-top:12px;}
 input{
- width:100%;padding:12px;margin-top:6px;
- border-radius:8px;border:none;font-size:16px;
+ width:100%;
+ padding:12px;
+ margin-top:6px;
+ border-radius:8px;
+ border:none;
+ font-size:16px;
 }
+
 button{
- margin-top:18px;width:100%;padding:14px;
- background:red;color:white;border:none;
- border-radius:10px;font-size:18px;cursor:pointer;
+ margin-top:15px;
+ width:100%;
+ padding:14px;
+ background:red;
+ color:white;
+ border:none;
+ border-radius:10px;
+ font-size:18px;
+ cursor:pointer;
  transition:.3s;
 }
-button:hover{transform:scale(1.05);box-shadow:0 0 15px red;}
 
-.error{color:red;margin-top:8px;display:none;font-weight:bold;}
+button:hover{
+ transform:scale(1.05);
+ box-shadow:0 0 15px red;
+}
+
+.error{
+ color:red;
+ margin-top:6px;
+ display:none;
+ font-weight:bold;
+}
+
 #enviarBtn{display:none;}
 
-.linha{display:flex;gap:10px;}
+.linha{
+ display:flex;
+ gap:10px;
+}
+
 .linha button{width:50%;}
 
 .contador{
@@ -65,10 +97,14 @@ button:hover{transform:scale(1.05);box-shadow:0 0 15px red;}
  max-height:260px;
  overflow-y:auto;
 }
-.lista div{padding:6px;border-bottom:1px solid #222;}
+.lista div{
+ padding:6px;
+ border-bottom:1px solid #222;
+}
 .lista div:last-child{border-bottom:none;}
 </style>
 </head>
+
 <body>
 
 <!-- FORM -->
@@ -91,12 +127,13 @@ button:hover{transform:scale(1.05);box-shadow:0 0 15px red;}
 <div class="error" id="erroIdade">Menores de 10 não podem</div>
 
 <button id="enviarBtn" onclick="enviar()">Enviar</button>
+<button onclick="abrirLoginAdmin()">Área Admin</button>
 </div>
 
 <!-- CONFIRMA -->
 <div class="box" id="segundaParte">
 <h1 id="bemVindo"></h1>
-<p>Confirmar formulário</p>
+<p>Confirmar formulário?</p>
 <button onclick="confirmar()">Confirmar e enviar</button>
 </div>
 
@@ -108,32 +145,24 @@ button:hover{transform:scale(1.05);box-shadow:0 0 15px red;}
 <div class="error" id="erroSenha"></div>
 </div>
 
-<!-- VERIFICAÇÃO -->
-<div class="box" id="verificacao">
-<h1>Verificação</h1>
-<input id="nomeVerificacao" placeholder="Nome secreto">
-<button onclick="verificarNome()">Verificar</button>
-<div class="error" id="erroVerificacao"></div>
-</div>
-
 <!-- RESET -->
 <div class="box" id="resetSenha">
 <h1>Resetar senha?</h1>
 <div class="linha">
 <button onclick="mostrarReset()">Resetar</button>
-<button onclick="naoResetar()">Não resetar</button>
+<button onclick="naoResetar()">Não</button>
 </div>
 
 <div id="areaReset" style="display:none;">
 <input id="novaSenha" placeholder="Nova senha">
-<button onclick="salvarNovaSenha()">Enviar</button>
+<button onclick="salvarNovaSenha()">Salvar</button>
 </div>
 </div>
 
 <!-- ADMIN -->
 <div class="box" id="adminParte">
 <h1>Painel Admin</h1>
-<div class="contador" id="contadorPessoas">👥 Total cadastrados: 0</div>
+<div class="contador" id="contadorPessoas"></div>
 <div class="lista" id="listaNomes"></div>
 <button onclick="sair()">Sair</button>
 </div>
@@ -150,38 +179,41 @@ function discordValido(n){
 }
 
 function personagemUsado(p){
- let u=JSON.parse(localStorage.getItem("personagensUsados"))||[];
+ let u = JSON.parse(localStorage.getItem("personagensUsados")) || [];
  return u.includes(p.toLowerCase());
 }
 
 function verificar(){
- let discordOk=discordValido(discord.value.trim());
- let personagemOk=personagem.value && !personagemUsado(personagem.value);
+ let discordOk = discordValido(discord.value.trim());
+ let personagemOk = personagem.value && !personagemUsado(personagem.value);
 
- erroDiscord.style.display=discord.value && !discordOk?"block":"none";
- erroPersonagem.style.display=personagem.value && !personagemOk?"block":"none";
+ erroDiscord.style.display = discord.value && !discordOk ? "block" : "none";
+ erroPersonagem.style.display = personagem.value && !personagemOk ? "block" : "none";
 
- if(idade.value && idade.value<10){
+ if(idade.value && idade.value < 10){
    erroIdade.style.display="block";
    enviarBtn.style.display="none";
    return;
- } else erroIdade.style.display="none";
+ }else erroIdade.style.display="none";
 
  if(nome.value && idade.value && discordOk && personagemOk)
-    enviarBtn.style.display="block";
+   enviarBtn.style.display="block";
  else enviarBtn.style.display="none";
 }
 
-document.querySelectorAll("input").forEach(i=>i.addEventListener("input",verificar));
+document.querySelectorAll("input").forEach(i=>{
+ i.addEventListener("input", verificar);
+});
 
 function enviar(){
- let usados=JSON.parse(localStorage.getItem("personagensUsados"))||[];
+ let usados = JSON.parse(localStorage.getItem("personagensUsados")) || [];
  usados.push(personagem.value.toLowerCase());
- localStorage.setItem("personagensUsados",JSON.stringify(usados));
+ localStorage.setItem("personagensUsados", JSON.stringify(usados));
+
+ bemVindo.innerText = "🔥 Bem-vindo, " + nome.value;
 
  formParte.style.display="none";
  segundaParte.style.display="block";
- bemVindo.innerText="🔥 Bem vindo, "+nome.value;
 }
 
 function confirmar(){
@@ -193,54 +225,54 @@ Discord: ${discord.value}
 Personagem: ${personagem.value}
 Idade: ${idade.value}`;
 
- let gmailLink="https://mail.google.com/mail/?view=cm&fs=1"+
+ let gmailLink =
+ "https://mail.google.com/mail/?view=cm&fs=1"+
  "&to=mi.micael1405@gmail.com"+
  "&su=Formulario%20Stranger%20Things"+
  "&body="+encodeURIComponent(corpo);
 
  window.open(gmailLink,"_blank");
+
+ location.reload();
+}
+
+function abrirLoginAdmin(){
+ formParte.style.display="none";
+ senhaParte.style.display="block";
 }
 
 function verificarSenha(){
  let senhaSalva = localStorage.getItem("senhaAdmin");
- if(senha.value===senhaSalva){
+ if(senha.value === senhaSalva){
    abrirAdmin();
  }else{
    tentativas++;
    erroSenha.style.display="block";
    erroSenha.innerText="Senha incorreta";
-   if(tentativas>=3){
+
+   if(tentativas >= 3){
      senhaParte.style.display="none";
-     verificacao.style.display="block";
+     resetSenha.style.display="block";
    }
  }
 }
 
-function verificarNome(){
- let n = nomeVerificacao.value;
- if(n==="Eddiemi" || n==="Mieddi" || n==="SToff"){
-   verificacao.style.display="none";
-   resetSenha.style.display="block";
- }else{
-   erroVerificacao.style.display="block";
-   erroVerificacao.innerText="Nome inválido";
- }
+function mostrarReset(){
+ areaReset.style.display="block";
 }
 
-function mostrarReset(){areaReset.style.display="block";}
-function naoResetar(){resetSenha.style.display="none";abrirAdmin();}
-
-function salvarNovaSenha(){
- localStorage.setItem("senhaAdmin", novaSenha.value);
+function naoResetar(){
  resetSenha.style.display="none";
  abrirAdmin();
 }
 
+function salvarNovaSenha(){
+ localStorage.setItem("senhaAdmin", novaSenha.value);
+ abrirAdmin();
+}
+
 function abrirAdmin(){
- formParte.style.display="none";
- segundaParte.style.display="none";
  senhaParte.style.display="none";
- verificacao.style.display="none";
  resetSenha.style.display="none";
  adminParte.style.display="block";
  mostrarLista();
@@ -248,13 +280,16 @@ function abrirAdmin(){
 
 function mostrarLista(){
  let usados = JSON.parse(localStorage.getItem("personagensUsados")) || [];
- contadorPessoas.innerText="👥 Total cadastrados: "+usados.length;
+ contadorPessoas.innerText = "👥 Total cadastrados: " + usados.length;
  listaNomes.innerHTML = usados.length
  ? usados.map((n,i)=>`<div>${i+1}. ${n}</div>`).join("")
  : "<i>Nenhum registrado</i>";
 }
 
-function sair(){location.reload();}
+function sair(){
+ location.reload();
+}
 </script>
+
 </body>
 </html>
