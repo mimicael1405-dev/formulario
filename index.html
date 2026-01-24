@@ -220,7 +220,7 @@ function mostrarLista(){
  contadorPessoas.innerText = "👥 Total cadastrados: " + usados.length;
 
  if(usados.length === 0){
-   listaNomes.innerHTML = "<i>Nenhum personagem usado</i>";
+   listaNomes.innerHTML = "<i>Nenhum registrado</i>";
  } else {
    listaNomes.innerHTML = usados
      .map((n,i)=> `<div>${i+1}. ${n}</div>`)
@@ -234,7 +234,12 @@ function resetar(){
 
  setTimeout(()=>{
    localStorage.removeItem("personagensUsados");
-   carregando.innerText="✅ Resetado com sucesso";
+
+   // ATUALIZA A TELA
+   listaNomes.innerHTML = "<i>Nenhum registrado</i>";
+   contadorPessoas.innerText = "👥 Total cadastrados: 0";
+
+   carregando.innerText = "✅ Resetado com sucesso";
    sairBtn.style.display="block";
  },5000);
 }
