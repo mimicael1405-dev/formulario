@@ -12,10 +12,24 @@ body{
  min-height:100vh;display:flex;justify-content:center;align-items:center;padding:15px;
 }
 .box{
- width:100%;max-width:420px;background:#0d0d0d;padding:20px;
- border-radius:15px;box-shadow:0 0 20px #ff000055;text-align:center;
+ width:100%;
+ max-width:440px;
+ background:linear-gradient(145deg,#0a0a0a,#111);
+ padding:22px;
+ border-radius:18px;
+ box-shadow:0 0 25px #ff000070;
+ text-align:center;
+ max-height:90vh;
+ overflow-y:auto;
+ border:1px solid #ff000050;
 }
 h1{color:red;}
+.admin-title{
+ font-size:26px;
+ color:#ff2a2a;
+ text-shadow:0 0 10px #ff000080;
+ margin-bottom:10px;
+}
 label{text-align:left;display:block;margin-top:12px;}
 input{
  width:100%;padding:12px;margin-top:6px;
@@ -24,20 +38,48 @@ input{
 button{
  margin-top:18px;width:100%;padding:14px;
  background:red;color:white;border:none;
- border-radius:10px;font-size:18px;
- cursor:pointer;
-}
-button:disabled{
- opacity:.5;
- cursor:not-allowed;
+ border-radius:10px;font-size:18px;cursor:pointer;
 }
 .error{color:red;margin-top:8px;display:none;font-weight:bold;}
-#segundaParte,#adminParte{display:none;}
+#enviarBtn{display:none;}
+#segundaParte,#senhaParte,#adminParte{display:none;}
+
+.contador{
+ margin:10px 0;
+ padding:10px;
+ border-radius:12px;
+ background:#000;
+ border:1px solid #ff000060;
+ font-size:18px;
+ color:#00ff88;
+}
+
+.lista{
+ text-align:left;
+ margin-top:10px;
+ background:#050505;
+ padding:12px;
+ border-radius:12px;
+ border:1px solid #ff000040;
+ max-height:260px;
+ overflow-y:auto;
+}
+
+.lista div{
+ padding:6px;
+ border-bottom:1px solid #222;
+}
+
+.lista div:last-child{border-bottom:none;}
+
+.carregando{
+ margin-top:15px;font-size:18px;color:yellow;
+}
 </style>
 </head>
-
 <body>
 
+<!-- FORMULÁRIO -->
 <div class="box" id="formParte">
 <h1>Formulario do cliente</h1>
 
@@ -45,8 +87,8 @@ button:disabled{
 <input id="nome">
 
 <label>Nick do Discord</label>
-<input id="discord" placeholder="Ex: usuario#1234">
-<div class="error" id="erroDiscord">Discord inválido</div>
+<input id="discord">
+<div class="error" id="erroDiscord">Apenas letras, números e _ (sem símbolos)</div>
 
 <label>Seu personagem de Stranger Things</label>
 <input id="personagem">
@@ -56,71 +98,91 @@ button:disabled{
 <input type="number" id="idade">
 <div class="error" id="erroIdade">Menores de 10 anos não podem</div>
 
-<button id="enviarBtn" onclick="enviar()" disabled>Enviar</button>
+<button id="enviarBtn" onclick="enviar()">Enviar</button>
 </div>
 
+<!-- CONFIRMAÇÃO -->
 <div class="box" id="segundaParte">
 <h1 id="bemVindo"></h1>
 <p>Confirmar formulario</p>
 <button onclick="confirmar()">Confirmar formulario</button>
 </div>
 
-<div class="box" id="adminParte">
-<h1>Senha:</h1>
+<!-- SENHA -->
+<div class="box" id="senhaParte">
+<h1>Área admin</h1>
+<p>Digite a senha:</p>
 <input type="password" id="senha">
-<button onclick="verificarSenha()">Confirmar</button>
+<button onclick="verificarSenha()">Entrar</button>
 <div class="error" id="erroSenha"></div>
 </div>
 
+<!-- ADMIN -->
+<div class="box" id="adminParte">
+<h1 class="admin-title">Painel Admin</h1>
+
+<div class="contador" id="contadorPessoas">
+👥 Total cadastrados: 0
+</div>
+
+<div class="lista" id="listaNomes"></div>
+
+<button onclick="resetar()" id="resetBtn">Resetar lista</button>
+<div class="carregando" id="carregando" style="display:none;">⏳ Resetando...</div>
+<button onclick="sair()" id="sairBtn" style="display:none;">Sair</button>
+</div>
+
 <script>
-const inputs = document.querySelectorAll("input");
-const enviarBtn = document.getElementById("enviarBtn");
+let tentativas = 0;
 
+/* Discord: só letras, números e _ */
 function discordValido(n){
- return /^[a-zA-Z0-9_.]{2,32}(#\d{4})?$/.test(n);
-}
-
-function personagemNormalizado(p){
- return p.trim().toLowerCase();
+ return /^[A-Za-z0-9_]{2,32}$/.test(n);
 }
 
 function personagemUsado(p){
- const usados = JSON.parse(localStorage.getItem("personagensUsados")) || [];
- return usados.includes(personagemNormalizado(p));
+ let u=JSON.parse(localStorage.getItem("personagensUsados"))||[];
+ return u.includes(p.toLowerCase());
 }
 
 function verificar(){
- if(nome.value.trim().toLowerCase() === "reset!"){
-   formParte.style.display="none";
-   adminParte.style.display="block";
-   return;
+ if(nome.value.trim().toLowerCase()==="reset!"){
+    formParte.style.display="none";
+    senhaParte.style.display="block";
+    return;
  }
 
- const discordOk = discordValido(discord.value.trim());
- const idadeOk = idade.value && idade.value >= 10;
- const personagemOk = personagem.value && !personagemUsado(personagem.value);
+ let discordOk=discordValido(discord.value.trim());
+ let personagemOk=personagem.value && !personagemUsado(personagem.value);
 
- erroDiscord.style.display = discord.value && !discordOk ? "block" : "none";
- erroIdade.style.display = idade.value && !idadeOk ? "block" : "none";
- erroPersonagem.style.display = personagem.value && !personagemOk ? "block" : "none";
+ erroDiscord.style.display=discord.value && !discordOk?"block":"none";
+ erroPersonagem.style.display=personagem.value && !personagemOk?"block":"none";
 
- enviarBtn.disabled = !(nome.value && discordOk && idadeOk && personagemOk);
+ if(idade.value && idade.value<10){
+    erroIdade.style.display="block";
+    enviarBtn.style.display="none";
+    return;
+ } else erroIdade.style.display="none";
+
+ if(nome.value && idade.value && discordOk && personagemOk)
+    enviarBtn.style.display="block";
+ else enviarBtn.style.display="none";
 }
 
-inputs.forEach(i => i.addEventListener("input", verificar));
+document.querySelectorAll("input").forEach(i=>i.addEventListener("input",verificar));
 
 function enviar(){
- const usados = JSON.parse(localStorage.getItem("personagensUsados")) || [];
- usados.push(personagemNormalizado(personagem.value));
- localStorage.setItem("personagensUsados", JSON.stringify(usados));
+ let usados=JSON.parse(localStorage.getItem("personagensUsados"))||[];
+ usados.push(personagem.value.toLowerCase());
+ localStorage.setItem("personagensUsados",JSON.stringify(usados));
 
  formParte.style.display="none";
  segundaParte.style.display="block";
- bemVindo.innerText = `Olá ${nome.value}, seja bem-vindo`;
+ bemVindo.innerText="Olá "+nome.value+" seja bem vindo";
 }
 
 function confirmar(){
- const corpo =
+ let corpo =
 `Formulario do cliente
 
 Nome: ${nome.value}
@@ -128,31 +190,58 @@ Discord: ${discord.value}
 Personagem: ${personagem.value}
 Idade: ${idade.value}`;
 
- const gmailLink =
- "https://mail.google.com/mail/?view=cm&fs=1" +
- "&to=mi.micael1405@gmail.com" +
- "&su=Formulario%20do%20Discord" +
- "&body=" + encodeURIComponent(corpo);
+ let gmailLink="https://mail.google.com/mail/?view=cm&fs=1"+
+ "&to=mi.micael1405@gmail.com"+
+ "&su=Formulario%20do%20Discord"+
+ "&body="+encodeURIComponent(corpo);
 
- window.open(gmailLink, "_blank");
+ window.open(gmailLink,"_blank");
 }
 
-let tentativas = 0;
 function verificarSenha(){
- if(senha.value === "ADM123"){
-   localStorage.removeItem("personagensUsados");
-   adminParte.innerHTML = "<h1>Resetado</h1><p>Lista apagada.</p>";
+ if(senha.value==="ADM123"){
+    senhaParte.style.display="none";
+    adminParte.style.display="block";
+    mostrarLista();
  } else {
-   tentativas++;
-   erroSenha.style.display="block";
-   erroSenha.innerText="Senha incorreta";
-   senha.value="";
-   if(tentativas >= 3){
-     adminParte.innerHTML="<h1>Acesso bloqueado</h1>";
-   }
+    tentativas++;
+    erroSenha.style.display="block";
+    erroSenha.innerText="Senha incorreta";
+    senha.value="";
+    if(tentativas>=3){
+        document.body.innerHTML="<h1 style='color:red'>Acesso bloqueado</h1>";
+    }
  }
 }
-</script>
 
+function mostrarLista(){
+ let usados = JSON.parse(localStorage.getItem("personagensUsados")) || [];
+
+ contadorPessoas.innerText = "👥 Total cadastrados: " + usados.length;
+
+ if(usados.length === 0){
+   listaNomes.innerHTML = "<i>Nenhum personagem usado</i>";
+ } else {
+   listaNomes.innerHTML = usados
+     .map((n,i)=> `<div>${i+1}. ${n}</div>`)
+     .join("");
+ }
+}
+
+function resetar(){
+ resetBtn.style.display="none";
+ carregando.style.display="block";
+
+ setTimeout(()=>{
+   localStorage.removeItem("personagensUsados");
+   carregando.innerText="✅ Resetado com sucesso";
+   sairBtn.style.display="block";
+ },5000);
+}
+
+function sair(){
+ location.reload();
+}
+</script>
 </body>
 </html>
