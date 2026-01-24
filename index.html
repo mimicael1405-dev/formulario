@@ -2,55 +2,75 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<title>Painel Admin Stranger Things</title>
+<title>Stranger Things - Formulário</title>
 
 <style>
+*{box-sizing:border-box;}
 body{
  margin:0;font-family:Arial;background:black;color:white;
- min-height:100vh;display:flex;justify-content:center;align-items:center;
+ min-height:100vh;display:flex;justify-content:center;align-items:center;padding:15px;
 }
 .box{
- background:#0b0b0b;
- padding:25px;border-radius:16px;
- box-shadow:0 0 25px red;
- width:100%;max-width:420px;text-align:center;
+ width:100%;max-width:420px;background:#0b0b0b;padding:22px;
+ border-radius:16px;box-shadow:0 0 25px red;text-align:center;
 }
 h1{color:red;text-shadow:0 0 10px red;}
-input,button{
- width:100%;padding:12px;margin-top:10px;
+label{text-align:left;display:block;margin-top:12px;}
+input,textarea,button{
+ width:100%;padding:12px;margin-top:6px;
  border-radius:8px;border:none;font-size:16px;
 }
+textarea{resize:none;height:90px;}
 button{
  background:red;color:white;cursor:pointer;
  transition:.3s;
 }
 button:hover{transform:scale(1.05);box-shadow:0 0 15px red;}
 .error{color:red;display:none;margin-top:8px;}
-#verificacao,#resetSenha,#admin{display:none;}
+
+#senhaBox,#verificacao,#resetSenha,#admin{display:none;}
 .linha{display:flex;gap:10px;}
 .linha button{width:50%;}
 </style>
 </head>
 <body>
 
-<div class="box" id="login">
+<!-- FORMULÁRIO -->
+<div class="box" id="formBox">
+<h1>Formulário</h1>
+
+<label>Nome</label>
+<input id="nome">
+
+<label>Email</label>
+<input id="email">
+
+<label>Mensagem</label>
+<textarea id="msg"></textarea>
+
+<button onclick="enviar()">Enviar</button>
+</div>
+
+<!-- SENHA ADMIN -->
+<div class="box" id="senhaBox">
 <h1>Área Admin</h1>
 <input type="password" id="senha" placeholder="Senha admin">
 <button onclick="verificarSenha()">Entrar</button>
 <div class="error" id="erroSenha"></div>
 </div>
 
+<!-- VERIFICAÇÃO -->
 <div class="box" id="verificacao">
 <h1>Verificação</h1>
-<p>Digite o nome de verificação:</p>
-<input id="nomeVerificacao" placeholder="Nome secreto">
+<p>Digite o nome secreto:</p>
+<input id="nomeVerificacao">
 <button onclick="verificarNome()">Verificar</button>
 <div class="error" id="erroVerificacao"></div>
 </div>
 
+<!-- RESET -->
 <div class="box" id="resetSenha">
 <h1>Resetar senha?</h1>
-
 <div class="linha">
 <button onclick="mostrarReset()">Resetar</button>
 <button onclick="naoResetar()">Não resetar</button>
@@ -62,6 +82,7 @@ button:hover{transform:scale(1.05);box-shadow:0 0 15px red;}
 </div>
 </div>
 
+<!-- PAINEL -->
 <div class="box" id="admin">
 <h1>Painel Admin</h1>
 <p>✅ Acesso liberado</p>
@@ -76,6 +97,16 @@ if(!localStorage.getItem("senhaAdmin")){
  localStorage.setItem("senhaAdmin","STH");
 }
 
+function enviar(){
+ if(nome.value === "STH"){
+   formBox.style.display="none";
+   senhaBox.style.display="block";
+   return;
+ }
+ alert("✅ Formulário enviado!");
+ nome.value=""; email.value=""; msg.value="";
+}
+
 function verificarSenha(){
  let senhaSalva = localStorage.getItem("senhaAdmin");
 
@@ -87,7 +118,7 @@ function verificarSenha(){
    erroSenha.innerText="Senha incorreta";
 
    if(tentativas >= 3){
-     login.style.display="none";
+     senhaBox.style.display="none";
      verificacao.style.display="block";
    }
  }
@@ -125,7 +156,8 @@ function salvarNovaSenha(){
 }
 
 function abrirAdmin(){
- login.style.display="none";
+ formBox.style.display="none";
+ senhaBox.style.display="none";
  verificacao.style.display="none";
  resetSenha.style.display="none";
  admin.style.display="block";
