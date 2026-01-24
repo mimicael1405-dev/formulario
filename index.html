@@ -2,327 +2,135 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Formulario Stranger Things</title>
+<title>Painel Admin Stranger Things</title>
 
 <style>
-*{box-sizing:border-box;}
-
 body{
- margin:0;
- font-family:Arial;
- color:white;
- min-height:100vh;
- display:flex;
- justify-content:center;
- align-items:center;
- padding:15px;
- background:
- radial-gradient(circle at top, #400000, #000 60%),
- linear-gradient(180deg, #050505, #000);
- animation:fundoST 6s infinite alternate;
+ margin:0;font-family:Arial;background:black;color:white;
+ min-height:100vh;display:flex;justify-content:center;align-items:center;
 }
-
-@keyframes fundoST{
- from{filter:brightness(0.9);}
- to{filter:brightness(1.2);}
-}
-
 .box{
- width:100%;
- max-width:440px;
- background:linear-gradient(160deg,#050505,#120000);
- padding:22px;
- border-radius:18px;
- box-shadow:0 0 30px #ff000090;
- text-align:center;
- max-height:90vh;
- overflow-y:auto;
- border:1px solid #ff000080;
- animation:caixaPulso 3s infinite alternate;
+ background:#0b0b0b;
+ padding:25px;border-radius:16px;
+ box-shadow:0 0 25px red;
+ width:100%;max-width:420px;text-align:center;
 }
-
-@keyframes caixaPulso{
- from{box-shadow:0 0 15px #ff000060;}
- to{box-shadow:0 0 35px #ff000;}
-}
-
-h1{
- color:#ff2a2a;
- letter-spacing:2px;
- text-shadow:0 0 10px red,0 0 25px darkred,0 0 40px black;
-}
-
-.admin-title{
- animation:glitch 2.5s infinite alternate;
-}
-
-.admin-title::after{
- content:"";
- display:block;
- margin:8px auto;
- width:120px;
- height:2px;
- background:red;
- box-shadow:0 0 10px red;
-}
-
-@keyframes glitch{
- 0%{text-shadow:0 0 10px red;}
- 50%{text-shadow:2px 2px 15px darkred,-2px -2px 15px black;}
- 100%{text-shadow:0 0 20px red;}
-}
-
-label{text-align:left;display:block;margin-top:12px;}
-input{
- width:100%;padding:12px;margin-top:6px;
+h1{color:red;text-shadow:0 0 10px red;}
+input,button{
+ width:100%;padding:12px;margin-top:10px;
  border-radius:8px;border:none;font-size:16px;
 }
-
 button{
- margin-top:18px;width:100%;padding:14px;
- background:red;color:white;border:none;
- border-radius:10px;font-size:18px;cursor:pointer;
- transition:0.3s ease;
+ background:red;color:white;cursor:pointer;
+ transition:.3s;
 }
-
-button:hover{
- transform:scale(1.08);
- box-shadow:0 0 25px red, inset 0 0 10px #ff0000;
- filter:brightness(1.3);
-}
-
-.error{color:red;margin-top:8px;display:none;font-weight:bold;}
-#enviarBtn{display:none;}
-#segundaParte,#senhaParte,#adminParte{display:none;}
-
-.contador{
- margin:10px 0;
- padding:10px;
- border-radius:12px;
- background:#000;
- border:1px solid #ff000060;
- font-size:18px;
- color:#00ff88;
-}
-
-.lista{
- text-align:left;
- margin-top:10px;
- background:#050505;
- padding:12px;
- border-radius:12px;
- border:1px solid #ff000040;
- max-height:260px;
- overflow-y:auto;
-}
-
-.lista div{
- padding:6px;
- border-bottom:1px solid #222;
-}
-
-#bemVindo{
- font-size:28px;
- color:#ff3b3b;
- text-shadow:0 0 15px red;
- animation:entrada 1s ease;
-}
-
-@keyframes entrada{
- from{opacity:0;transform:translateY(-20px) scale(0.9);}
- to{opacity:1;transform:translateY(0) scale(1);}
-}
-
-/* ===== RESET ===== */
-.reset-overlay{
- position:fixed;
- inset:0;
- background:#777;
- display:flex;
- justify-content:center;
- align-items:center;
- flex-direction:column;
- z-index:999;
- animation:fundoEscurecendo 0.6s ease forwards;
-}
-
-@keyframes fundoEscurecendo{
- from{background:#aaa;}
- to{background:#555;}
-}
-
-.reset-text{
- font-size:36px;
- font-weight:bold;
- color:#222;
- opacity:0;
- margin-top:15px;
- animation:textoEntrando 1s ease forwards;
-}
-
-@keyframes textoEntrando{
- from{opacity:0;letter-spacing:8px;transform:scale(0.9);}
- to{opacity:1;letter-spacing:2px;transform:scale(1);}
-}
-
-.reset-ok{
- color:#00ff77;
- text-shadow:0 0 20px #00ff77, 0 0 40px #00ff77;
-}
-
-.reset-gif{
- width:90px;
- filter:drop-shadow(0 0 12px black);
-}
+button:hover{transform:scale(1.05);box-shadow:0 0 15px red;}
+.error{color:red;display:none;margin-top:8px;}
+#verificacao,#resetSenha,#admin{display:none;}
+.linha{display:flex;gap:10px;}
+.linha button{width:50%;}
 </style>
 </head>
 <body>
 
-<div class="box" id="formParte">
-<h1>Formulario Stranger Things</h1>
-
-<label>Nome</label>
-<input id="nome">
-
-<label>Nick do Discord</label>
-<input id="discord">
-<div class="error" id="erroDiscord">Apenas letras, números e _</div>
-
-<label>Seu personagem</label>
-<input id="personagem">
-<div class="error" id="erroPersonagem">Personagem já usado</div>
-
-<label>Idade</label>
-<input type="number" id="idade">
-<div class="error" id="erroIdade">Menores de 10 não podem</div>
-
-<button id="enviarBtn" onclick="enviar()">Enviar</button>
-</div>
-
-<div class="box" id="segundaParte">
-<h1 id="bemVindo"></h1>
-<p style="color:#ff4b4b;text-shadow:0 0 10px red;">✨ Confirme seu formulário ✨</p>
-<button onclick="confirmar()">Confirmar</button>
-</div>
-
-<div class="box" id="senhaParte">
-<h1>Área admin</h1>
-<input type="password" id="senha">
+<div class="box" id="login">
+<h1>Área Admin</h1>
+<input type="password" id="senha" placeholder="Senha admin">
 <button onclick="verificarSenha()">Entrar</button>
 <div class="error" id="erroSenha"></div>
 </div>
 
-<div class="box" id="adminParte">
-<h1 class="admin-title">Painel Admin</h1>
-<div class="contador" id="contadorPessoas">👥 Total cadastrados: 0</div>
-<div class="lista" id="listaNomes"></div>
-<button onclick="resetar()" id="resetBtn">Resetar lista</button>
-<button onclick="sair()" id="sairBtn" style="display:none;">Sair</button>
+<div class="box" id="verificacao">
+<h1>Verificação</h1>
+<p>Digite o nome de verificação:</p>
+<input id="nomeVerificacao" placeholder="Nome secreto">
+<button onclick="verificarNome()">Verificar</button>
+<div class="error" id="erroVerificacao"></div>
+</div>
+
+<div class="box" id="resetSenha">
+<h1>Resetar senha?</h1>
+
+<div class="linha">
+<button onclick="mostrarReset()">Resetar</button>
+<button onclick="naoResetar()">Não resetar</button>
+</div>
+
+<div id="areaReset" style="display:none;">
+<input id="novaSenha" placeholder="Nova senha">
+<button onclick="salvarNovaSenha()">Enviar</button>
+</div>
+</div>
+
+<div class="box" id="admin">
+<h1>Painel Admin</h1>
+<p>✅ Acesso liberado</p>
+<p id="senhaAtual"></p>
 </div>
 
 <script>
-let tentativas=0;
+let tentativas = 0;
 
-function discordValido(n){return /^[A-Za-z0-9_]{2,32}$/.test(n);}
-
-function personagemUsado(p){
- let u=JSON.parse(localStorage.getItem("personagensUsados"))||[];
- return u.includes(p.toLowerCase());
-}
-
-function verificar(){
- if(nome.value.trim().toLowerCase()==="reset!"){
-  formParte.style.display="none";
-  senhaParte.style.display="block";
-  return;
- }
-
- let discordOk=discordValido(discord.value.trim());
- let personagemOk=personagem.value && !personagemUsado(personagem.value);
-
- erroDiscord.style.display=discord.value && !discordOk?"block":"none";
- erroPersonagem.style.display=personagem.value && !personagemOk?"block":"none";
-
- if(idade.value && idade.value<10){
-  erroIdade.style.display="block";
-  enviarBtn.style.display="none";
-  return;
- } else erroIdade.style.display="none";
-
- enviarBtn.style.display=(nome.value && idade.value && discordOk && personagemOk)?"block":"none";
-}
-
-document.querySelectorAll("input").forEach(i=>i.addEventListener("input",verificar));
-
-function enviar(){
- let usados=JSON.parse(localStorage.getItem("personagensUsados"))||[];
- usados.push(personagem.value.toLowerCase());
- localStorage.setItem("personagensUsados",JSON.stringify(usados));
- formParte.style.display="none";
- segundaParte.style.display="block";
- bemVindo.innerText="Olá "+nome.value+" seja bem vindo";
-}
-
-function confirmar(){
- let corpo=`Formulario\n\nNome: ${nome.value}\nDiscord: ${discord.value}\nPersonagem: ${personagem.value}\nIdade: ${idade.value}`;
- window.open("https://mail.google.com/mail/?view=cm&fs=1&to=mi.micael1405@gmail.com&su=Formulario&body="+encodeURIComponent(corpo),"_blank");
+/* senha inicial */
+if(!localStorage.getItem("senhaAdmin")){
+ localStorage.setItem("senhaAdmin","STH");
 }
 
 function verificarSenha(){
- if(senha.value==="ADM123"){
-  senhaParte.style.display="none";
-  adminParte.style.display="block";
-  mostrarLista();
- } else {
-  tentativas++;
-  erroSenha.style.display="block";
-  erroSenha.innerText="Senha incorreta";
-  senha.value="";
-  if(tentativas>=3) document.body.innerHTML="<h1 style='color:red'>Acesso bloqueado</h1>";
+ let senhaSalva = localStorage.getItem("senhaAdmin");
+
+ if(senha.value === senhaSalva){
+   abrirAdmin();
+ }else{
+   tentativas++;
+   erroSenha.style.display="block";
+   erroSenha.innerText="Senha incorreta";
+
+   if(tentativas >= 3){
+     login.style.display="none";
+     verificacao.style.display="block";
+   }
  }
 }
 
-function mostrarLista(){
- let usados=JSON.parse(localStorage.getItem("personagensUsados"))||[];
- contadorPessoas.innerText="👥 Total cadastrados: "+usados.length;
- listaNomes.innerHTML=usados.length?usados.map((n,i)=>`<div>${i+1}. ${n}</div>`).join(""):"<i>Nenhum registrado</i>";
+function verificarNome(){
+ let n = nomeVerificacao.value;
+
+ if(n==="Eddiemi" || n==="Mieddi" || n==="SToff"){
+   verificacao.style.display="none";
+   resetSenha.style.display="block";
+ }else{
+   erroVerificacao.style.display="block";
+   erroVerificacao.innerText="Nome inválido";
+ }
 }
 
-function resetar(){
- resetBtn.style.display="none";
-
- let overlay=document.createElement("div");
- overlay.className="reset-overlay";
-
- let gif=document.createElement("img");
- gif.className="reset-gif";
- gif.src="https://i.gifer.com/ZZ5H.gif";
-
- let texto=document.createElement("div");
- texto.className="reset-text";
- texto.innerText="Resetando...";
-
- overlay.appendChild(gif);
- overlay.appendChild(texto);
- document.body.appendChild(overlay);
-
- setTimeout(()=>{
-  texto.innerText="✅ Resetado";
-  texto.classList.add("reset-ok");
-  gif.style.display="none";
-  localStorage.removeItem("personagensUsados");
-  listaNomes.innerHTML="<i>Nenhum registrado</i>";
-  contadorPessoas.innerText="👥 Total cadastrados: 0";
-
-  setTimeout(()=>{
-   overlay.remove();
-   sairBtn.style.display="block";
-  },1800);
- },5000);
+function mostrarReset(){
+ areaReset.style.display="block";
 }
 
-function sair(){location.reload();}
+function naoResetar(){
+ resetSenha.style.display="none";
+ abrirAdmin();
+}
+
+function salvarNovaSenha(){
+ if(novaSenha.value.length < 3){
+   alert("Senha muito curta");
+   return;
+ }
+ localStorage.setItem("senhaAdmin", novaSenha.value);
+ resetSenha.style.display="none";
+ abrirAdmin();
+}
+
+function abrirAdmin(){
+ login.style.display="none";
+ verificacao.style.display="none";
+ resetSenha.style.display="none";
+ admin.style.display="block";
+ senhaAtual.innerText = "🔐 Senha atual: " + localStorage.getItem("senhaAdmin");
+}
 </script>
 </body>
 </html>
